@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #forum {
+            width: 70%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .post {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        h1 {
+            text-align: center;
+        }
+        .login-button {
+            float: right;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Forum Section -->
+    <div id="forum">
+        <h1>Forum</h1>
+
+        <!-- Login button on the top right -->
+        <button class="login-button" onclick="window.location.href='login.html'">Login</button>
+
+        <!-- Display all posts (questions) -->
+        <div id="posts"></div>
+
+    </div>
+
+    <script>
+        // Fetch and display posts (questions)
+        function loadPosts() {
+            $.get("http://127.0.0.1:5003/posts", function(posts) {
+                let postsHtml = '';
+                posts.forEach(post => {
+                    postsHtml += `
+                        <div class="post">
+                            <h3>${post.title}</h3>
+                            <p>${post.content}</p>
+                            <p>Posted by: ${post.username}</p>
+                            <button onclick="loadReplies(${post.post_id})">View Replies</button>
+                            <div id="replies-${post.post_id}"></div>
+
+                            <!-- Reply Form -->
+                            <div>
+                                <textarea id="reply-content-${post.post_id}" placeholder="Write a reply..."></textarea>
+                                <button onclick="submitReply(${post.post_id})">Submit Reply</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#posts').html(postsHtml);
+            });
+        }
+
+        // Fetch and display replies for a post
+        function loadReplies(post_id) {
+            $.get(`http://127.0.0.1:5001/posts/${post_id}/replies`, function(replies) {
+                let repliesHtml = '';
+                replies.forEach(reply => {
+                    repliesHtml += `
+                        <p><strong>${reply.username}:</strong> ${reply.content}</p>
+                    `;
+                });
+                $(`#replies-${post_id}`).html(repliesHtml);
+            });
+        }
+
+        // Submit a reply
+        function submitReply(post_id) {
+            const content = $(`#reply-content-${post_id}`).val();
+            const user_id = 1;  // Replace with the logged-in user's ID dynamically later
+
+            $.ajax({
+                url: `http://127.0.0.1:5003/posts/${post_id}/replies`,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ user_id, content }),
+                success: function(response) {
+                    loadReplies(post_id);  // Reload replies after submitting
+                }
+            });
+        }
+
+        // Load posts when the page loads
+        $(document).ready(function() {
+            loadPosts();
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Signup Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        .spline-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .spline-background iframe {
+            width: 100%;
+            height: 100%;
+            transform: scale(1.5);
+            transform-origin: center;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+        .form-box {
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 350px;
+            background-color: transparent;
+        }
+        .form-box h2 {
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .form-box input[type="text"], .form-box input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .form-box button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .form-box button:hover {
+            background-color: #0056b3;
+        }
+        .form-box p {
+            margin-top: 15px;
+            color: white;
+        }
+        .form-box a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .form-box a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="spline-background">
+        <iframe src="https://my.spline.design/interfaceii-28d080bbe561de33512465e3407d2e10/" frameborder="0"></iframe>
+    </div>
+
+    <div class="container">
+        <div class="form-box">
+            <h2>Login</h2>
+            <form id="login-form">
+                <input type="text" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+                <p>Don't have an account? <a href="#" onclick="showSignup()">Sign Up</a></p>
+            </form>
+
+            <form id="signup-form" style="display: none;">
+                <input type="text" id="signup-username" placeholder="Username" required>
+                <input type="text" id="signup-email" placeholder="Email" required>
+                <input type="password" id="signup-password" placeholder="Password" required>
+                <button type="submit">Sign Up</button>
+                <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+
+        function showSignup() {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        }
+
+        function showLogin() {
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+        }
+
+        loginForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            fetch('http://127.0.0.1:5004/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', data.username);
+                    alert('Login successful! Welcome, ' + data.username);
+                    window.location.href = 'query_page.html';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        signupForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            fetch('http://127.0.0.1:5004/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    email: email,
+                    password: password,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'User registered successfully') {
+                    alert('Signup successful! You can now log in.');
+                    showLogin();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+
+</body>
+</html>

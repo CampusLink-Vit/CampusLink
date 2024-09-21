@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #posts {
+            margin-top: 20px;
+        }
+        .button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Forum</h1>
+        <div>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>Posts</h2>
+        <div id="posts">
+            <!-- Posts will be displayed here -->
+        </div>
+        <button class="button" onclick="goToLogin()">Go to Login</button>
+    </div>
+
+    <script>
+        function loadPosts() {
+            fetch('http://127.0.0.1:5001/posts')
+                .then(response => response.json())
+                .then(data => {
+                    const postsDiv = document.getElementById('posts');
+                    postsDiv.innerHTML = ''; // Clear previous posts
+                    data.forEach(post => {
+                        const postElement = document.createElement('div');
+                        postElement.innerHTML = `<h3>${post.title}</h3><p>${post.content}</p>`;
+                        postsDiv.appendChild(postElement);
+                    });
+                })
+                .catch(error => console.error('Error fetching posts:', error));
+        }
+
+        function logout() {
+            // Logic for logout (e.g., clear session, redirect to login page)
+            window.location.href = 'login.html';
+        }
+
+        function goToLogin() {
+            window.location.href = 'login.html';
+        }
+
+        // Load posts when the page is loaded
+        window.onload = loadPosts;
+    </script>
+</body>
+</html>
