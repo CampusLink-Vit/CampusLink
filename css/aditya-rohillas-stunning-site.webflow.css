@@ -1093,13 +1093,16 @@ a {
 }
 
 .body-2 {
-  background-color: #120727;
-  background-image: linear-gradient(#000, #fff);
+  background-color: #242424;
+  background-image: linear-gradient(#00000080, #00000080);
 }
 
 .spline-scene-10 {
-  background-image: linear-gradient(264deg, #c21212 23%, #fff);
-  flex: 0 auto;
+  -webkit-text-fill-color: inherit;
+  background-color: #2e2826;
+  background-image: radial-gradient(circle at 100% 100%, #c21212 23%, #fff);
+  background-clip: border-box;
+  flex: 1;
 }
 
 .section-3 {
@@ -1213,6 +1216,11 @@ a {
 .heading-7 {
   position: fixed;
   inset: 19% auto auto 45%;
+}
+
+.spline-scene-16 {
+  text-decoration: none;
+  display: flex;
 }
 
 @media screen and (max-width: 991px) {
